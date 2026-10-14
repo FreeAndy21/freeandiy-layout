@@ -126,7 +126,7 @@ impl Tokens {
             measure_bg: Color32::from_rgba_unmultiplied(70, 70, 70, 230),
             measure_text: Color32::WHITE,
         };
-        match b {
+        let tokens = match b {
             Brightness::Dark => dark,
             // Measured from InDesign 2026 (plan/indesign/11-observed-ui.md §1).
             Brightness::MediumDark => Tokens {
@@ -249,7 +249,8 @@ impl Tokens {
                 tab_strip: hex(0x000000),
                 ..dark
             },
-        }
+        };
+        crate::freeandiy::tokens(b, tokens)
     }
 }
 
@@ -268,12 +269,19 @@ fn font_definitions(craft: &'static [designcraft_fonts::CraftFont], lang: &str) 
     let add = |fonts: &mut FontDefinitions, name: &str, data: &'static [u8]| {
         fonts.font_data.insert(name.into(), Arc::new(FontData::from_static(data)));
     };
-    add(&mut fonts, "ui", include_bytes!("../../../assets/fonts/SourceSans3-Regular.ttf"));
-    add(&mut fonts, "ui-semibold", include_bytes!("../../../assets/fonts/SourceSans3-Semibold.ttf"));
-    add(&mut fonts, "mono", include_bytes!("../../../assets/fonts/JetBrainsMono-Regular.ttf"));
-    fonts.families.entry(FontFamily::Proportional).or_default().insert(0, "ui".into());
-    fonts.families.entry(FontFamily::Monospace).or_default().insert(0, "mono".into());
-    fonts.families.insert(FontFamily::Name("semibold".into()), vec!["ui-semibold".into(), "ui".into()]);
+    // FreeANDIY: IBM Plex Sans and Mono (`crate::freeandiy::fonts`) under upstream's keys, with
+    // upstream's faces right after for the symbols Plex lacks.
+    add(&mut fonts, "ui", crate::freeandiy::fonts::sans_regular());
+    add(&mut fonts, "ui-semibold", crate::freeandiy::fonts::sans_semibold());
+    add(&mut fonts, "mono", crate::freeandiy::fonts::mono_regular());
+    add(&mut fonts, "ui-upstream", include_bytes!("../../../assets/fonts/SourceSans3-Regular.ttf"));
+    add(&mut fonts, "ui-semibold-upstream", include_bytes!("../../../assets/fonts/SourceSans3-Semibold.ttf"));
+    add(&mut fonts, "mono-upstream", include_bytes!("../../../assets/fonts/JetBrainsMono-Regular.ttf"));
+    fonts.families.entry(FontFamily::Proportional).or_default().splice(0..0, ["ui".into(), "ui-upstream".into()]);
+    fonts.families.entry(FontFamily::Monospace).or_default().splice(0..0, ["mono".into(), "mono-upstream".into()]);
+    fonts
+        .families
+        .insert(FontFamily::Name("semibold".into()), vec!["ui-semibold".into(), "ui-semibold-upstream".into(), "ui".into(), "ui-upstream".into()]);
     let pick = |script: &str| -> Vec<&designcraft_fonts::CraftFont> { craft.iter().filter(|f| f.scripts.contains(&script)).collect() };
     let mut japanese = pick("Jpan");
     // BIZ UDPGothic (the UI face) first, Regular before Bold; the semibold family prefers Bold.
@@ -345,6 +353,7 @@ pub fn apply(ctx: &egui::Context, t: &Tokens) {
     v.widgets.inactive.weak_bg_fill = Color32::TRANSPARENT;
     v.widgets.inactive.bg_fill = t.input;
     v.popup_shadow = egui::epaint::Shadow { offset: [0, 4], blur: 12, spread: 0, color: Color32::from_black_alpha(90) };
+    crate::freeandiy::visuals(&mut v);
     ctx.set_visuals(v);
     ctx.global_style_mut(|s| {
         s.text_styles = text_styles.clone();
@@ -406,10 +415,10 @@ mod japanese_font_tests {
             // (egui's has_glyph reports false for characters of the face that also supplies the
             // replacement glyph, as Source Sans Semibold does in the semibold stack.)
             let body = egui::FontId::new(13.0, egui::FontFamily::Proportional);
-            assert!(fonts.has_glyphs(&body, "DesignCraft"));
+            assert!(fonts.has_glyphs(&body, "FreeANDIY Layout"));
             for family in families() {
                 let font = egui::FontId::new(13.0, family);
-                let galley = fonts.layout_no_wrap("日本語 DesignCraft".into(), font, egui::Color32::WHITE);
+                let galley = fonts.layout_no_wrap("日本語 FreeANDIY Layout".into(), font, egui::Color32::WHITE);
                 assert!(galley.size().x > 0.0);
             }
         });

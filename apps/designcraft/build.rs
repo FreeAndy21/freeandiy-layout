@@ -7,19 +7,19 @@
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed=../../assets/app-icon/designcraft.ico");
+    println!("cargo:rerun-if-changed=../../assets/app-icon/freeandiy-layout.ico");
     println!("cargo:rerun-if-env-changed=DESIGNCRAFT_REQUIRE_WINRES");
     if std::env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("windows") {
         return;
     }
     let mut res = winresource::WindowsResource::new();
-    res.set_icon("../../assets/app-icon/designcraft.ico")
-        .set("ProductName", "DesignCraft")
-        .set("FileDescription", "DesignCraft page layout")
+    res.set_icon("../../assets/app-icon/freeandiy-layout.ico")
+        .set("ProductName", "FreeANDIY Layout")
+        .set("FileDescription", "FreeANDIY Layout page layout")
         .set("CompanyName", "Learning Machines LLC")
-        .set("LegalCopyright", "Copyright (c) the DesignCraft authors. MIT OR Apache-2.0.")
-        .set("OriginalFilename", "designcraft.exe")
-        .set("InternalName", "designcraft");
+        .set("LegalCopyright", "Copyright (c) Free Andy Agency and the DesignCraft authors. MIT OR Apache-2.0.")
+        .set("OriginalFilename", "freeandiy-layout.exe")
+        .set("InternalName", "freeandiy-layout");
     if let Err(e) = res.compile() {
         if std::env::var_os("DESIGNCRAFT_REQUIRE_WINRES").is_some() {
             eprintln!("embedding Windows resources failed: {e}");

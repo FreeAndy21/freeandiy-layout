@@ -1,7 +1,7 @@
 # Flatpak manifest for the single-file bundle attached to every GitHub release
-# (designcraft-<version>-linux-<arch>.flatpak). Build it with packaging/linux/flatpak-bundle.sh.
+# (freeandiy-layout-<version>-linux-<arch>.flatpak). Build it with packaging/linux/flatpak-bundle.sh.
 #
-# It repackages the release's own Linux tarball (designcraft-<version>-linux-<arch>.tar.gz,
+# It repackages the release's own Linux tarball (freeandiy-layout-<version>-linux-<arch>.tar.gz,
 # built on Ubuntu 22.04 by package.sh) instead of compiling Rust inside flatpak-builder: no
 # network and no vendored crate sources during the build, a few seconds instead of 20+ minutes,
 # and byte-for-byte the same binaries as the AppImage/deb/rpm. The script unpacks the tarball
@@ -9,13 +9,13 @@
 # Wayland, xkbcommon and Vulkan at runtime; the freedesktop runtime has all of them, and the
 # GPU driver comes from its org.freedesktop.Platform.GL extension.
 #
-# ai.storyteller.designcraft.yml (same directory) is the from-source manifest for Flathub. Keep
+# agency.freeandy.layout.yml (same directory) is the from-source manifest for Flathub. Keep
 # runtime-version and finish-args identical in both (packaging-lint checks this).
-id: ai.storyteller.designcraft
+id: agency.freeandy.layout
 runtime: org.freedesktop.Platform
 runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
-command: designcraft
+command: freeandiy-layout
 finish-args:
   # Display: Wayland first; X11 only when no Wayland compositor is running.
   - --socket=wayland
@@ -31,19 +31,19 @@ finish-args:
   - --filesystem=xdg-documents
   - --filesystem=xdg-pictures
   # Deliberately not granted: network (the optional --control server listens on 127.0.0.1 in
-  # the sandbox; `flatpak override --user --share=network ai.storyteller.designcraft` exposes it
+  # the sandbox; `flatpak override --user --share=network agency.freeandy.layout` exposes it
   # to host agents) and home/host filesystem access.
 modules:
-  - name: designcraft
+  - name: freeandiy-layout
     buildsystem: simple
     build-commands:
-      - install -Dm755 bin/designcraft /app/bin/designcraft
-      - install -Dm755 bin/designcraft-cli /app/bin/designcraft-cli
-      - install -Dm644 share/applications/ai.storyteller.designcraft.desktop /app/share/applications/ai.storyteller.designcraft.desktop
-      - install -Dm644 share/mime/packages/ai.storyteller.designcraft.xml /app/share/mime/packages/ai.storyteller.designcraft.xml
+      - install -Dm755 bin/freeandiy-layout /app/bin/freeandiy-layout
+      - install -Dm755 bin/freeandiy-layout-cli /app/bin/freeandiy-layout-cli
+      - install -Dm644 share/applications/agency.freeandy.layout.desktop /app/share/applications/agency.freeandy.layout.desktop
+      - install -Dm644 share/mime/packages/agency.freeandy.layout.xml /app/share/mime/packages/agency.freeandy.layout.xml
       # Already has the release's version and date substituted by package.sh.
-      - install -Dm644 share/metainfo/ai.storyteller.designcraft.metainfo.xml /app/share/metainfo/ai.storyteller.designcraft.metainfo.xml
-      - mkdir -p /app/share/icons /app/share/doc && cp -R share/icons/hicolor /app/share/icons/ && cp -R share/doc/designcraft /app/share/doc/
+      - install -Dm644 share/metainfo/agency.freeandy.layout.metainfo.xml /app/share/metainfo/agency.freeandy.layout.metainfo.xml
+      - mkdir -p /app/share/icons /app/share/doc && cp -R share/icons/hicolor /app/share/icons/ && cp -R share/doc/freeandiy-layout /app/share/doc/
     sources:
       - type: dir
         path: stage

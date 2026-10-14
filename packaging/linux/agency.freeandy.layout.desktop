@@ -1,13 +1,13 @@
 [Desktop Entry]
 Type=Application
-Name=DesignCraft
+Name=FreeANDIY Layout
 GenericName=Page Layout
 Comment=Lay out magazines, books and print documents
-Exec=designcraft %F
-TryExec=designcraft
-Icon=ai.storyteller.designcraft
+Exec=freeandiy-layout %F
+TryExec=freeandiy-layout
+Icon=agency.freeandy.layout
 Terminal=false
 StartupNotify=true
-StartupWMClass=ai.storyteller.designcraft
+StartupWMClass=agency.freeandy.layout
 Categories=Graphics;Publishing;
 Keywords=layout;page;desktop publishing;dtp;magazine;book;indesign;idml;typesetting;

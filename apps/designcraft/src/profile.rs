@@ -13,8 +13,8 @@ fn config_dir_with(os: &str, env: impl Fn(&str) -> Option<OsString>) -> Option<P
         return (!root.is_empty()).then(|| PathBuf::from(root));
     }
     match os {
-        "macos" => env("HOME").map(|p| PathBuf::from(p).join("Library/Application Support/DesignCraft")),
-        "windows" => env("APPDATA").map(|p| PathBuf::from(p).join("DesignCraft")),
+        "macos" => env("HOME").map(|p| PathBuf::from(p).join("Library/Application Support/FreeANDIY Layout")),
+        "windows" => env("APPDATA").map(|p| PathBuf::from(p).join("FreeANDIY Layout")),
         _ => {
             env("XDG_CONFIG_HOME").map(PathBuf::from).or_else(|| env("HOME").map(|p| PathBuf::from(p).join(".config"))).map(|p| p.join("designcraft"))
         }
@@ -74,8 +74,8 @@ mod tests {
 
     #[test]
     fn unset_override_preserves_existing_platform_paths() {
-        assert_eq!(config_dir_with("macos", environment), Some("/user/Library/Application Support/DesignCraft".into()));
-        assert_eq!(config_dir_with("windows", environment), Some("/roaming/DesignCraft".into()));
+        assert_eq!(config_dir_with("macos", environment), Some("/user/Library/Application Support/FreeANDIY Layout".into()));
+        assert_eq!(config_dir_with("windows", environment), Some("/roaming/FreeANDIY Layout".into()));
         assert_eq!(config_dir_with("linux", environment), Some("/xdg-config/designcraft".into()));
         assert_eq!(config_dir_with("linux", |key| if key == "HOME" { environment(key) } else { None }), Some("/user/.config/designcraft".into()));
         assert_eq!(recovery_dir_with(None, || Some("/existing/recovery".into())), Some("/existing/recovery".into()));

@@ -77,7 +77,7 @@ fn tool(name: &str, title: &str, desc: &str, schema: Value, read_only: bool) -> 
     })
 }
 
-const APP_ONLY: &str = " Desktop app only (`designcraft-cli mcp --connect PORT`).";
+const APP_ONLY: &str = " Desktop app only (`freeandiy-layout-cli mcp --connect PORT`).";
 
 /// All tools, in `tools/list` order.
 pub fn tool_definitions() -> Vec<Value> {
@@ -88,7 +88,7 @@ pub fn tool_definitions() -> Vec<Value> {
         tool(
             "list_commands",
             "List commands",
-            "List DesignCraft commands: id, label, menu path, shortcut, parameter description and whether it can run right now. \
+            "List FreeANDIY Layout commands: id, label, menu path, shortcut, parameter description and whether it can run right now. \
              Every user-visible action is a command (frame.create, text.insert, type.char, style.paragraph.apply, layout.pages.insert, \
              object.fill, transform.move, edit.undo…); run them with execute or batch.",
             obj(
@@ -103,7 +103,7 @@ pub fn tool_definitions() -> Vec<Value> {
         tool(
             "execute",
             "Execute command",
-            "Run any DesignCraft command by id with JSON params (ids and params from list_commands). Examples: \
+            "Run any FreeANDIY Layout command by id with JSON params (ids and params from list_commands). Examples: \
              {\"command\":\"frame.create\",\"params\":{\"rect\":[36,36,576,300],\"content\":\"text\",\"text\":\"Hello\"}} → {id, story}; \
              {\"command\":\"type.char\",\"params\":{\"size\":24}}; {\"command\":\"edit.undo\"}. Coordinates are points in spread space. \
              In the desktop app the UI-only commands (view.*, window.*, help.*, edit.dynamicSpelling, and app.* except app.links, \

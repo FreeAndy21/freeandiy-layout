@@ -1,25 +1,25 @@
 //! Headless DesignCraft.
 //!
 //! ```text
-//! designcraft-cli run [--in FILE.designcraft|FILE.idml | --sample] [--cmd ID[=JSON]]... [--page N] [--scale S] [--pdf-options JSON] [--export OUT.png|.jpg|.pdf|.designcraft|.idml|.epub] [--all-pages DIR]
+//! freeandiy-layout-cli run [--in FILE.designcraft|FILE.idml | --sample] [--cmd ID[=JSON]]... [--page N] [--scale S] [--pdf-options JSON] [--export OUT.png|.jpg|.pdf|.designcraft|.idml|.epub] [--all-pages DIR]
 //!                                      # --page, --scale and --pdf-options apply to the exports that follow them
-//! designcraft-cli commands [FILTER]   # list commands (JSON), optionally only ids/labels/menus containing FILTER
-//! designcraft-cli describe ID          # one command: label, menu, shortcut, parameters
-//! designcraft-cli script [FILE|-] [--in FILE | --sample] [--connect PORT] [--save OUT] [--export OUT] [--keep-going]
+//! freeandiy-layout-cli commands [FILTER]   # list commands (JSON), optionally only ids/labels/menus containing FILTER
+//! freeandiy-layout-cli describe ID          # one command: label, menu, shortcut, parameters
+//! freeandiy-layout-cli script [FILE|-] [--in FILE | --sample] [--connect PORT] [--save OUT] [--export OUT] [--keep-going]
 //!                                      # run a command script (crates/engine/src/script.rs): `$N.path` references
-//! designcraft-cli app [--port PORT] COMMAND [JSON]   # run a command in the running app (designcraft --control PORT)
-//! designcraft-cli app [--port PORT] --method METHOD [JSON]   # any control-channel method (ui.screenshot, ui.render, …)
-//! designcraft-cli mcp [--connect PORT] [--sample]  # MCP server over stdio (docs/mcp.md)
-//! designcraft-cli perf [--pages N] [--frames N] [--chars N] [--images N] [--runs N] [--strict]  # budgets on a synthetic stress document
-//! designcraft-cli bench FILE [--runs N]  # the same measurements on one document
-//! designcraft-cli validate-pdf FILE.pdf    # run the built-in PDF/X-4 conformance checks
-//! designcraft-cli links                   # Discord, website, app page and GitHub links
-//! designcraft-cli --version               # print the version
+//! freeandiy-layout-cli app [--port PORT] COMMAND [JSON]   # run a command in the running app (designcraft --control PORT)
+//! freeandiy-layout-cli app [--port PORT] --method METHOD [JSON]   # any control-channel method (ui.screenshot, ui.render, …)
+//! freeandiy-layout-cli mcp [--connect PORT] [--sample]  # MCP server over stdio (docs/mcp.md)
+//! freeandiy-layout-cli perf [--pages N] [--frames N] [--chars N] [--images N] [--runs N] [--strict]  # budgets on a synthetic stress document
+//! freeandiy-layout-cli bench FILE [--runs N]  # the same measurements on one document
+//! freeandiy-layout-cli validate-pdf FILE.pdf    # run the built-in PDF/X-4 conformance checks
+//! freeandiy-layout-cli links                   # website, app page and GitHub links
+//! freeandiy-layout-cli --version               # print the version
 //! ```
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 use std::process::ExitCode;
 
-/// `println!` that ends the program quietly when stdout is closed (`designcraft-cli commands |
+/// `println!` that ends the program quietly when stdout is closed (`freeandiy-layout-cli commands |
 /// head`) instead of panicking with "failed printing to stdout: Broken pipe (os error 32)".
 macro_rules! outln {
     ($($arg:tt)*) => {{
@@ -36,10 +36,10 @@ use designcraft_engine::Session;
 use serde_json::{Value, json};
 
 /// The usage block. Shared by `--help` (stdout, success) and an unknown command (stderr, failure).
-const USAGE: &str = "usage: designcraft-cli run [--in FILE | --sample] [--cmd ID[=JSON]]... [--page N] [--scale S] [--pdf-options JSON] [--export OUT] [--all-pages DIR]\n         (--page, --scale and --pdf-options apply to the exports that follow them)\n       designcraft-cli commands [FILTER]\n       designcraft-cli describe COMMAND\n       designcraft-cli script [FILE|-] [--in FILE | --sample] [--connect PORT] [--save OUT] [--export OUT] [--keep-going]\n       designcraft-cli app [--port PORT] COMMAND [JSON] | --method METHOD [JSON]\n       designcraft-cli mcp [--connect PORT] [--sample]\n       designcraft-cli perf [--pages N] [--runs N] [--strict]\n       designcraft-cli bench FILE [--runs N]\n       designcraft-cli links\n       designcraft-cli --version";
+const USAGE: &str = "usage: freeandiy-layout-cli run [--in FILE | --sample] [--cmd ID[=JSON]]... [--page N] [--scale S] [--pdf-options JSON] [--export OUT] [--all-pages DIR]\n         (--page, --scale and --pdf-options apply to the exports that follow them)\n       freeandiy-layout-cli commands [FILTER]\n       freeandiy-layout-cli describe COMMAND\n       freeandiy-layout-cli script [FILE|-] [--in FILE | --sample] [--connect PORT] [--save OUT] [--export OUT] [--keep-going]\n       freeandiy-layout-cli app [--port PORT] COMMAND [JSON] | --method METHOD [JSON]\n       freeandiy-layout-cli mcp [--connect PORT] [--sample]\n       freeandiy-layout-cli perf [--pages N] [--runs N] [--strict]\n       freeandiy-layout-cli bench FILE [--runs N]\n       freeandiy-layout-cli links\n       freeandiy-layout-cli --version";
 
 /// `script --help`: the script syntax, otherwise only in `describe script.run` and docs/agents.md.
-const SCRIPT_HELP: &str = r#"usage: designcraft-cli script [FILE|-] [--in FILE | --sample] [--connect PORT] [--save OUT] [--export OUT] [--keep-going]
+const SCRIPT_HELP: &str = r#"usage: freeandiy-layout-cli script [FILE|-] [--in FILE | --sample] [--connect PORT] [--save OUT] [--export OUT] [--keep-going]
 
 Runs a command script from FILE (stdin when FILE is `-` or missing), headless or, with
 --connect PORT, in the running app (designcraft --control PORT).
@@ -58,7 +58,7 @@ References to earlier results (in string parameters):
 
 Text parameters: "\n" starts a new paragraph, "\u2028" is a forced line break, "\t" a tab.
 Most commands ignore parameters they do not know instead of rejecting them: check names
-with `designcraft-cli describe COMMAND`.
+with `freeandiy-layout-cli describe COMMAND`.
 
 Options:
   --in FILE / --sample   open a document (.designcraft or .idml) or the sample first
@@ -71,12 +71,7 @@ non-zero exit when a step fails."#;
 
 /// The links line under the usage block.
 fn usage_footer() -> String {
-    format!(
-        "\nCommunity: {}  ·  {}  ·  {}",
-        designcraft_engine::links::DISCORD,
-        designcraft_engine::links::APP_PAGE,
-        designcraft_engine::links::GITHUB
-    )
+    format!("\nWeb: {}  ·  {}", designcraft_engine::links::APP_PAGE, designcraft_engine::links::GITHUB)
 }
 
 /// stdout went away. A reader that stopped early (a closed pipe) ends the program quietly, as
@@ -85,7 +80,7 @@ fn stdout_failed(e: std::io::Error) -> ! {
     if e.kind() == std::io::ErrorKind::BrokenPipe {
         std::process::exit(0);
     }
-    eprintln!("designcraft-cli: can't write to stdout: {e}");
+    eprintln!("freeandiy-layout-cli: can't write to stdout: {e}");
     std::process::exit(1);
 }
 
@@ -93,7 +88,7 @@ fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     match args.first().map(String::as_str) {
         Some("--version" | "-V" | "version") => {
-            outln!("designcraft-cli {}", env!("CARGO_PKG_VERSION"));
+            outln!("freeandiy-layout-cli {}", env!("CARGO_PKG_VERSION"));
             ExitCode::SUCCESS
         }
         Some("run") => report(run(&args[1..])),
@@ -119,7 +114,7 @@ fn main() -> ExitCode {
         Some("validate-pdf") => report(validate_pdf(args.get(1).map(String::as_str))),
         Some("links") => {
             use designcraft_engine::links::*;
-            outln!("Discord   {DISCORD}\nWebsite   {WEBSITE}\nApp page  {APP_PAGE}\nGitHub    {GITHUB}\nIssues    {ISSUES}");
+            outln!("Website   {WEBSITE}\nApp page  {APP_PAGE}\nGitHub    {GITHUB}\nIssues    {ISSUES}");
             ExitCode::SUCCESS
         }
         // Asking for help is not an error: it goes to stdout and succeeds. An unknown command
@@ -141,14 +136,14 @@ fn report(r: Result<(), String>) -> ExitCode {
     match r {
         Ok(()) => ExitCode::SUCCESS,
         Err(e) => {
-            eprintln!("designcraft-cli: {e}");
+            eprintln!("freeandiy-layout-cli: {e}");
             ExitCode::FAILURE
         }
     }
 }
 
 fn validate_pdf(path: Option<&str>) -> Result<(), String> {
-    let path = path.ok_or("usage: designcraft-cli validate-pdf FILE.pdf")?;
+    let path = path.ok_or("usage: freeandiy-layout-cli validate-pdf FILE.pdf")?;
     let bytes = std::fs::read(path).map_err(|e| format!("{path}: {e}"))?;
     let issues = designcraft_pdf::check_pdfx4(&bytes);
     let valid = issues.is_empty();
@@ -168,7 +163,7 @@ fn mcp(args: &[String]) -> Result<(), String> {
         match a.as_str() {
             "--connect" => connect = Some(it.next().cloned().ok_or("--connect needs a port or host:port")?),
             "--sample" => sample = true,
-            other => return Err(format!("unknown mcp option `{other}` (usage: designcraft-cli mcp [--connect PORT] [--sample])")),
+            other => return Err(format!("unknown mcp option `{other}` (usage: freeandiy-layout-cli mcp [--connect PORT] [--sample])")),
         }
     }
     let backend: Box<dyn Backend> = match connect {
@@ -176,7 +171,7 @@ fn mcp(args: &[String]) -> Result<(), String> {
             let addr = control_addr(&c);
             Box::new(
                 Remote::connect(&addr)
-                    .map_err(|e| format!("cannot connect to the DesignCraft app at {addr}: {e} (start it with `designcraft --control PORT`)"))?,
+                    .map_err(|e| format!("cannot connect to the FreeANDIY Layout app at {addr}: {e} (start it with `designcraft --control PORT`)"))?,
             )
         }
         None => {
@@ -187,7 +182,7 @@ fn mcp(args: &[String]) -> Result<(), String> {
             Box::new(h)
         }
     };
-    eprintln!("designcraft-cli: MCP server on stdio ({})", backend.describe());
+    eprintln!("freeandiy-layout-cli: MCP server on stdio ({})", backend.describe());
     let stdin = std::io::stdin();
     let stdout = std::io::stdout();
     Server::new(backend).serve(stdin.lock(), stdout.lock()).map_err(|e| e.to_string())
@@ -319,7 +314,7 @@ fn export(s: &mut Session, out: &str, page: usize, scale: f64) -> Result<(), Str
 
 /// `describe ID`: one command's documentation.
 fn describe(id: Option<&str>) -> Result<(), String> {
-    let id = id.ok_or("usage: designcraft-cli describe COMMAND")?;
+    let id = id.ok_or("usage: freeandiy-layout-cli describe COMMAND")?;
     let s = Session::new();
     let all = serde_json::to_value(s.commands()).map_err(|e| e.to_string())?;
     let c = all.as_array().and_then(|a| a.iter().find(|c| c["id"] == id)).ok_or_else(|| {
@@ -388,7 +383,7 @@ fn script(args: &[String]) -> Result<(), String> {
             let addr = control_addr(c);
             Box::new(
                 Remote::connect(&addr)
-                    .map_err(|e| format!("cannot connect to the DesignCraft app at {addr}: {e} (start it with `designcraft --control PORT`)"))?,
+                    .map_err(|e| format!("cannot connect to the FreeANDIY Layout app at {addr}: {e} (start it with `designcraft --control PORT`)"))?,
             )
         }
         None => Box::new(Headless::with_document()),
@@ -451,13 +446,13 @@ fn app(args: &[String]) -> Result<(), String> {
     }
     let addr = control_addr(&port);
     let mut r = Remote::connect(&addr)
-        .map_err(|e| format!("cannot connect to the DesignCraft app at {addr}: {e} (start it with `designcraft --control {port}`)"))?;
+        .map_err(|e| format!("cannot connect to the FreeANDIY Layout app at {addr}: {e} (start it with `designcraft --control {port}`)"))?;
     let json_arg =
         |s: Option<&String>| -> Result<Value, String> { s.map_or(Ok(json!({})), |t| serde_json::from_str(t).map_err(|e| format!("bad JSON: {e}"))) };
     let out = match method {
         Some(m) => r.call(&m, json_arg(rest.first())?)?,
         None => {
-            let cmd = rest.first().ok_or("usage: designcraft-cli app [--port PORT] COMMAND [JSON]")?;
+            let cmd = rest.first().ok_or("usage: freeandiy-layout-cli app [--port PORT] COMMAND [JSON]")?;
             r.call("engine.execute", json!({"command": cmd, "params": json_arg(rest.get(1))?}))?
         }
     };

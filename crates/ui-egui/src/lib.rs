@@ -13,6 +13,7 @@ pub mod control;
 pub mod credits;
 pub mod dialogs;
 pub mod dock;
+pub mod freeandiy;
 pub mod i18n;
 pub mod icons;
 pub mod menus;

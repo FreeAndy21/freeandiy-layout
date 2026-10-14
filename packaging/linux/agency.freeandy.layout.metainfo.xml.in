@@ -2,26 +2,26 @@
 <!-- AppStream metadata (software centres, Flathub). Template: package.sh and the Flatpak
      manifest substitute @VERSION@ and @DATE@ from Cargo.toml and the build date. -->
 <component type="desktop-application">
-  <id>ai.storyteller.designcraft</id>
+  <id>agency.freeandy.layout</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT OR Apache-2.0</project_license>
-  <name>DesignCraft</name>
+  <name>FreeANDIY Layout</name>
   <summary>Lay out magazines, books and print documents</summary>
-  <developer id="ai.storyteller">
+  <developer id="agency.freeandy">
     <name>Learning Machines LLC</name>
   </developer>
   <description>
     <p>
-      DesignCraft is a page layout. Lay out magazines, books and print documents
+      FreeANDIY Layout is a page layout. Lay out magazines, books and print documents
     </p>
   </description>
-  <launchable type="desktop-id">ai.storyteller.designcraft.desktop</launchable>
-  <icon type="stock">ai.storyteller.designcraft</icon>
+  <launchable type="desktop-id">agency.freeandy.layout.desktop</launchable>
+  <icon type="stock">agency.freeandy.layout</icon>
   <!-- Only url types known to appstream 0.15 (Ubuntu 22.04, where CI validates): no vcs-browser. -->
-  <url type="homepage">https://getartcraft.com/apps/designcraft</url>
-  <url type="bugtracker">https://github.com/storytold/designcraft/issues</url>
-  <url type="help">https://github.com/storytold/designcraft</url>
-  <url type="contact">https://discord.gg/artcraft</url>
+  <url type="homepage">https://freeandiy.freeandy.agency/layout</url>
+  <url type="bugtracker">https://github.com/FreeAndy21/freeandiy-layout/issues</url>
+  <url type="help">https://github.com/FreeAndy21/freeandiy-layout</url>
+  <url type="contact">https://github.com/FreeAndy21/freeandiy-layout/issues</url>
   <categories>
     <category>Graphics</category>
     <category>RasterGraphics</category>
@@ -36,7 +36,7 @@
   <screenshots>
     <screenshot type="default">
       <caption>Editing The Great Wave off Kanagawa with type layers and adjustment layers</caption>
-      <image>https://raw.githubusercontent.com/storytold/designcraft/main/docs/images/designcraft-demo.jpg</image>
+      <image>https://raw.githubusercontent.com/FreeAndy21/freeandiy-layout/main/docs/images/freeandiy-layout-demo.jpg</image>
     </screenshot>
   </screenshots>
   <branding>
@@ -52,7 +52,7 @@
     <control>tablet</control>
   </supports>
   <provides>
-    <binary>designcraft</binary>
+    <binary>freeandiy-layout</binary>
   </provides>
   <content_rating type="oars-1.1"/>
   <releases>

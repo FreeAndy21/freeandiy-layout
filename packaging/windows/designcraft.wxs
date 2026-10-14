@@ -1,59 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  DesignCraft MSI (WiX Toolset v5: `dotnet tool install -g wix`). Built by package.ps1:
+  FreeANDIY Layout MSI (WiX Toolset v5: `dotnet tool install -g wix`). Built by package.ps1:
 
     wix build designcraft.wxs -arch x64 -d Version=1.2.3 -d BinDir=... -d IconPath=... -o out.msi
 
-  Per-machine install into Program Files, a Start Menu shortcut, `.pcraft` owned by DesignCraft,
-  and DesignCraft offered under "Open with" for PSD/PSB and the image formats it reads (without
+  Per-machine install into Program Files, a Start Menu shortcut, `.pcraft` owned by FreeANDIY Layout,
+  and FreeANDIY Layout offered under "Open with" for PSD/PSB and the image formats it reads (without
   taking over the user's default app for them).
 -->
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Package
-      Name="DesignCraft"
+      Name="FreeANDIY Layout"
       Manufacturer="Learning Machines LLC"
       Version="$(var.Version)"
-      UpgradeCode="49E87D30-BB68-4896-AA1D-F45C833CFC3C"
+      UpgradeCode="0A5E2249-5BCF-4414-BF66-D5085456AC3A"
       Scope="perMachine"
       Compressed="yes"
       Language="1033">
-    <SummaryInformation Description="DesignCraft page layout and publishing" Manufacturer="Learning Machines LLC" />
+    <SummaryInformation Description="FreeANDIY Layout page layout and publishing" Manufacturer="Learning Machines LLC" />
     <!-- Same-version upgrades let successive pre-releases of one X.Y.Z replace each other
          (MSI versions are numeric, so 1.2.3-rc.1 and 1.2.3-rc.2 are both 1.2.3). -->
     <MajorUpgrade AllowSameVersionUpgrades="yes"
-        DowngradeErrorMessage="A newer version of DesignCraft is already installed." />
+        DowngradeErrorMessage="A newer version of FreeANDIY Layout is already installed." />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
     <Icon Id="DesigncraftIcon.ico" SourceFile="$(var.IconPath)" />
     <Property Id="ARPPRODUCTICON" Value="DesigncraftIcon.ico" />
-    <Property Id="ARPURLINFOABOUT" Value="https://getartcraft.com/apps/designcraft" />
-    <Property Id="ARPURLUPDATEINFO" Value="https://getartcraft.com/apps/designcraft" />
-    <Property Id="ARPHELPLINK" Value="https://discord.gg/artcraft" />
+    <Property Id="ARPURLINFOABOUT" Value="https://freeandiy.freeandy.agency/layout" />
+    <Property Id="ARPURLUPDATEINFO" Value="https://freeandiy.freeandy.agency/layout" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/FreeAndy21/freeandiy-layout/issues" />
 
     <StandardDirectory Id="ProgramFiles6432Folder">
-      <Directory Id="INSTALLFOLDER" Name="DesignCraft" />
+      <Directory Id="INSTALLFOLDER" Name="FreeANDIY Layout" />
     </StandardDirectory>
     <StandardDirectory Id="ProgramMenuFolder" />
 
-    <Feature Id="Main" Title="DesignCraft" Level="1">
+    <Feature Id="Main" Title="FreeANDIY Layout" Level="1">
       <ComponentGroupRef Id="DesigncraftFiles" />
     </Feature>
   </Package>
 
   <Fragment>
     <ComponentGroup Id="DesigncraftFiles" Directory="INSTALLFOLDER">
-      <Component Id="DesigncraftApp" Guid="DE018EF3-EE87-4E36-9F76-0B7B060A195E">
-        <File Id="DesigncraftExe" Source="$(var.BinDir)\designcraft.exe" KeyPath="yes">
-          <Shortcut Id="StartMenuShortcut" Directory="ProgramMenuFolder" Name="DesignCraft"
-              Description="DesignCraft page layout and publishing" WorkingDirectory="INSTALLFOLDER" Advertise="yes"
+      <Component Id="DesigncraftApp" Guid="A5EA00DF-8842-421C-93F4-D71E210B95F7">
+        <File Id="DesigncraftExe" Source="$(var.BinDir)\freeandiy-layout.exe" KeyPath="yes">
+          <Shortcut Id="StartMenuShortcut" Directory="ProgramMenuFolder" Name="FreeANDIY Layout"
+              Description="FreeANDIY Layout page layout and publishing" WorkingDirectory="INSTALLFOLDER" Advertise="yes"
               Icon="DesigncraftIcon.ico" IconIndex="0" />
         </File>
 
-        <RegistryValue Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\designcraft.exe" Value="[#DesigncraftExe]" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\freeandiy-layout.exe" Value="[#DesigncraftExe]" Type="string" />
       </Component>
 
       <Component Id="DesigncraftCli">
-        <File Id="DesigncraftCliExe" Source="$(var.BinDir)\designcraft-cli.exe" KeyPath="yes" />
+        <File Id="DesigncraftCliExe" Source="$(var.BinDir)\freeandiy-layout-cli.exe" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>

@@ -15,7 +15,7 @@
   timestamp server, ...). Optional overrides: WINDOWS_TIMESTAMP_URL, SIGNTOOL (path to signtool.exe).
 
 .EXAMPLE
-  pwsh packaging/windows/sign.ps1 dist/designcraft.exe dist/Designcraft.msi
+  pwsh packaging/windows/sign.ps1 dist/freeandiy-layout.exe dist/Designcraft.msi
 #>
 param(
   [Parameter(Mandatory = $true, ValueFromRemainingArguments = $true)]
@@ -55,8 +55,8 @@ if (-not $haveCert -and -not $haveAzure) {
 }
 
 $script:SignTool = Find-SignTool
-$common = @('sign', '/v', '/fd', 'SHA256', '/td', 'SHA256', '/d', 'DesignCraft', '/du', 'https://github.com/storytold/designcraft')
-$tmp = Join-Path ([IO.Path]::GetTempPath()) "designcraft-sign-$([IO.Path]::GetRandomFileName())"
+$common = @('sign', '/v', '/fd', 'SHA256', '/td', 'SHA256', '/d', 'FreeANDIY Layout', '/du', 'https://github.com/FreeAndy21/freeandiy-layout')
+$tmp = Join-Path ([IO.Path]::GetTempPath()) "freeandiy-layout-sign-$([IO.Path]::GetRandomFileName())"
 New-Item -ItemType Directory -Path $tmp | Out-Null
 
 try {

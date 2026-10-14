@@ -1,24 +1,21 @@
-//! ArtCraft community and project links (Help menu, About, start screen, CLI, MCP).
+//! Project links (Help menu, About, start screen, CLI, MCP).
 
 use serde_json::{Value, json};
 
 /// The app's slug on getartcraft.com and GitHub.
 pub const APP: &str = "designcraft";
-/// The ArtCraft community Discord.
-pub const DISCORD: &str = "https://discord.gg/artcraft";
-/// The ArtCraft website.
-pub const WEBSITE: &str = "https://getartcraft.com";
-/// DesignCraft's page on the ArtCraft website.
-pub const APP_PAGE: &str = "https://getartcraft.com/apps/designcraft";
+/// The FreeANDIY website.
+pub const WEBSITE: &str = "https://freeandiy.freeandy.agency";
+/// DesignCraft's page on the FreeANDIY website.
+pub const APP_PAGE: &str = "https://freeandiy.freeandy.agency/layout";
 /// DesignCraft's source repository.
-pub const GITHUB: &str = "https://github.com/storytold/designcraft";
+pub const GITHUB: &str = "https://github.com/FreeAndy21/freeandiy-layout";
 /// Where to report bugs and request features.
-pub const ISSUES: &str = "https://github.com/storytold/designcraft/issues";
+pub const ISSUES: &str = "https://github.com/FreeAndy21/freeandiy-layout/issues";
 
 /// All links as JSON (the `app.links` command).
 pub fn all() -> Value {
     json!({
-        "discord": DISCORD,
         "website": WEBSITE,
         "appPage": APP_PAGE,
         "github": GITHUB,
@@ -26,10 +23,9 @@ pub fn all() -> Value {
     })
 }
 
-/// A link by key (`discord`, `website`, `appPage`, `github`, `issues`).
+/// A link by key (`website`, `appPage`, `github`, `issues`).
 pub fn get(key: &str) -> Option<&'static str> {
     Some(match key {
-        "discord" => DISCORD,
         "website" => WEBSITE,
         "appPage" => APP_PAGE,
         "github" => GITHUB,
@@ -44,10 +40,11 @@ mod tests {
 
     #[test]
     fn links_follow_the_app_slug() {
-        assert!(APP_PAGE.ends_with(&format!("/apps/{APP}")));
-        assert!(GITHUB.ends_with(&format!("/storytold/{APP}")));
+        assert!(APP_PAGE.starts_with(WEBSITE));
+        assert!(GITHUB.starts_with("https://github.com/"));
         assert!(ISSUES.starts_with(GITHUB));
-        for k in ["discord", "website", "appPage", "github", "issues"] {
+        assert!(get("discord").is_none());
+        for k in ["website", "appPage", "github", "issues"] {
             assert!(get(k).is_some_and(|u| u.starts_with("https://")), "{k}");
             assert_eq!(all()[k], get(k).unwrap());
         }

@@ -1,7 +1,7 @@
 # Hosting DesignCraft for the web
 
-`designcraft-web-<version>.zip` (from the GitHub release, or `packaging/web/package.sh`) holds a
-static site in `designcraft-web-<version>/`:
+`freeandiy-layout-<version>-web-wasm32.zip` (from the GitHub release, or `packaging/web/package.sh`) holds a
+static site in `freeandiy-layout-<version>-web-wasm32/`:
 
 | File | What it is |
 |---|---|
@@ -16,7 +16,7 @@ There is no server-side code. Upload the folder's contents anywhere that serves 
 
 All URLs in `index.html` are relative (`public_url = "./"` in `apps/designcraft-web/Trunk.toml`),
 so the site works at a domain root (`https://example.com/`), under a prefix
-(`https://example.com/tools/designcraft/`) and from a CDN bucket. The asset names carry a content
+(`https://example.com/tools/freeandiy-layout/`) and from a CDN bucket. The asset names carry a content
 hash, so they can be cached forever. Only `index.html` needs revalidation.
 
 ## Required server settings
@@ -39,7 +39,7 @@ hash, so they can be cached forever. Only `index.html` needs revalidation.
 nginx example:
 
 ```nginx
-location /designcraft/ {
+location /freeandiy-layout/ {
     types { application/wasm wasm; text/javascript js; text/html html; }
     gzip on;
     gzip_types application/wasm text/javascript text/html;
@@ -54,7 +54,7 @@ Local test: `python3 -m http.server 8765` inside the folder, then open http://lo
 
 ```html
 <iframe
-  src="https://example.com/designcraft/"
+  src="https://example.com/freeandiy-layout/"
   title="DesignCraft image editor"
   style="width: 100%; height: 720px; border: 0;"
   allow="fullscreen; clipboard-read; clipboard-write"
@@ -84,6 +84,6 @@ DesignCraft renders with wgpu. It uses **WebGPU** when the browser has it and fa
 | `?webgl` | Force the WebGL2 backend (useful when a WebGPU driver misbehaves) |
 | `?cpu` | Force the CPU canvas path (slowest, most compatible) |
 
-For example: `<iframe src="https://example.com/designcraft/?webgl" ...>`.
+For example: `<iframe src="https://example.com/freeandiy-layout/?webgl" ...>`.
 
 A browser with neither WebGPU nor WebGL2 gets a message in place of the app.

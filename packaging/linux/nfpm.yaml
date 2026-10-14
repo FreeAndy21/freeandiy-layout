@@ -3,7 +3,7 @@
 # exports VERSION and NFPM_ARCH.
 #
 #   nfpm package -f packaging/linux/nfpm.yaml -p deb -t dist/release/
-name: designcraft
+name: freeandiy-layout
 arch: ${NFPM_ARCH}
 platform: linux
 version: ${VERSION}
@@ -14,13 +14,13 @@ section: graphics
 priority: optional
 maintainer: ${DESIGNCRAFT_MAINTAINER}
 vendor: Learning Machines LLC
-homepage: https://getartcraft.com/apps/designcraft
+homepage: https://freeandiy.freeandy.agency/layout
 license: MIT OR Apache-2.0
 description: |-
   Open-source, native page layout and publishing that works the way InDesign users expect.
   Spreads and parent pages, threaded text frames, paragraph and character styles, swatches,
   text wrap and a Knuth-Plass paragraph composer; IDML import and export.
-  Includes designcraft-cli, a headless renderer and command runner.
+  Includes freeandiy-layout-cli, a headless renderer and command runner.
 
 # The binaries link only glibc and libgcc_s directly. Windowing (X11/Wayland, xkbcommon) and the
 # GPU (Vulkan, EGL/GL) are loaded at runtime, so they are dependencies/recommendations here
@@ -55,11 +55,11 @@ overrides:
       - xdg-desktop-portal
 
 contents:
-  - src: ${STAGE}/usr/bin/designcraft
-    dst: /usr/bin/designcraft
+  - src: ${STAGE}/usr/bin/freeandiy-layout
+    dst: /usr/bin/freeandiy-layout
     file_info: { mode: 0755 }
-  - src: ${STAGE}/usr/bin/designcraft-cli
-    dst: /usr/bin/designcraft-cli
+  - src: ${STAGE}/usr/bin/freeandiy-layout-cli
+    dst: /usr/bin/freeandiy-layout-cli
     file_info: { mode: 0755 }
   - src: ${STAGE}/usr/share/
     dst: /usr/share/

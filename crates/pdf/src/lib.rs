@@ -23,7 +23,7 @@
 //!   right characters), so text is selectable and searchable.
 //! - **Marks:** crop marks, bleed marks and a page-information line, drawn in `[Registration]`.
 //! - **Standards:** PDF/A-2b through krilla's validator and PDF/X-4 output intent/identification
-//!   with built-in conformance checks. `designcraft-cli validate-pdf` exposes those checks for CI.
+//!   with built-in conformance checks. `freeandiy-layout-cli validate-pdf` exposes those checks for CI.
 //!
 //! Not yet: tagged PDF, bookmarks, hyperlinks, overprint, layers as optional content.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]

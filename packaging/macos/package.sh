@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Build, sign and (optionally) notarize the macOS release artifacts:
 #
-#   $DIST/designcraft-<version>-macos-<arch>.dmg          DesignCraft.app on a drag-to-Applications DMG
-#   $DIST/designcraft-cli-<version>-macos-<arch>.zip      the headless CLI
+#   $DIST/freeandiy-layout-<version>-macos-<arch>.dmg          FreeANDIY Layout.app on a drag-to-Applications DMG
+#   $DIST/freeandiy-layout-cli-<version>-macos-<arch>.zip      the headless CLI
 #
 # Usage: packaging/macos/package.sh [--arch universal|aarch64|x86_64] [--skip-build]
 #
@@ -39,9 +39,9 @@ export MACOSX_DEPLOYMENT_TARGET=11.0
 IDENTITY="${MACOS_SIGN_IDENTITY:--}"
 SHORT_VERSION="${VERSION%%-*}"
 WORK="$CARGO_TARGET_DIR/macos-package"
-APP="$WORK/DesignCraft.app"
-DMG="$DIST/designcraft-$VERSION-macos-$ARCH.dmg"
-CLI_ZIP="$DIST/designcraft-cli-$VERSION-macos-$ARCH.zip"
+APP="$WORK/FreeANDIY Layout.app"
+DMG="$DIST/freeandiy-layout-$VERSION-macos-$ARCH.dmg"
+CLI_ZIP="$DIST/freeandiy-layout-cli-$VERSION-macos-$ARCH.zip"
 
 NOTARIZE=0
 if [ "$IDENTITY" = "-" ]; then
@@ -52,7 +52,7 @@ else
   warn "macOS: APPLE_ID / APPLE_PASSWORD / APPLE_TEAM_ID incomplete; signed but not notarized"
 fi
 
-echo "==> DesignCraft $VERSION for macOS ($ARCH), identity: $IDENTITY, notarize: $NOTARIZE"
+echo "==> FreeANDIY Layout $VERSION for macOS ($ARCH), identity: $IDENTITY, notarize: $NOTARIZE"
 
 # ---- build -------------------------------------------------------------------------------------
 if [ "$SKIP_BUILD" = 0 ]; then
@@ -63,7 +63,7 @@ fi
 
 rm -rf "$WORK"
 mkdir -p "$WORK/bin"
-for bin in designcraft designcraft-cli; do
+for bin in freeandiy-layout freeandiy-layout-cli; do
   inputs=()
   for t in "${TARGETS[@]}"; do inputs+=("$CARGO_TARGET_DIR/$t/release/$bin"); done
   lipo -create -output "$WORK/bin/$bin" "${inputs[@]}"
@@ -97,12 +97,12 @@ notarize() {
   fi
 }
 
-# ---- DesignCraft.app ----------------------------------------------------------------------------
+# ---- FreeANDIY Layout.app ----------------------------------------------------------------------------
 echo "==> assembling $APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 # Executable and icon carry the display name (CFBundleExecutable / CFBundleIconFile).
-cp "$WORK/bin/designcraft" "$APP/Contents/MacOS/DesignCraft"
-cp "$ROOT/assets/app-icon/designcraft.icns" "$APP/Contents/Resources/DesignCraft.icns"
+cp "$WORK/bin/freeandiy-layout" "$APP/Contents/MacOS/FreeANDIY Layout"
+cp "$ROOT/assets/app-icon/freeandiy-layout.icns" "$APP/Contents/Resources/FreeANDIY Layout.icns"
 # Licences of the embedded craft-fonts fonts (only when built with CRAFT_FONTS_DIR).
 copy_font_licences "$APP/Contents/Resources"
 sed -e "s/@VERSION@/$VERSION/g" -e "s/@SHORT_VERSION@/$SHORT_VERSION/g" \
@@ -113,13 +113,13 @@ printf 'APPL????' >"$APP/Contents/PkgInfo"
 
 # Sign inside-out: nested code first, then the bundle itself (no --deep on the final signature).
 # Today the only nested code is the main executable; frameworks/helpers would be signed here too.
-sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP/Contents/MacOS/DesignCraft"
+sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP/Contents/MacOS/FreeANDIY Layout"
 sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP"
 codesign --verify --strict --deep --verbose=2 "$APP"
 
 if [ "$NOTARIZE" = 1 ]; then
-  ditto -c -k --keepParent "$APP" "$WORK/DesignCraft-notarize.zip"
-  notarize "$WORK/DesignCraft-notarize.zip"
+  ditto -c -k --keepParent "$APP" "$WORK/FreeANDIY Layout-notarize.zip"
+  notarize "$WORK/FreeANDIY Layout-notarize.zip"
   xcrun stapler staple "$APP"
   xcrun stapler validate "$APP"
   spctl --assess --type execute -vvv "$APP"
@@ -129,7 +129,7 @@ fi
 echo "==> building $DMG"
 STAGE="$WORK/dmg"
 mkdir -p "$STAGE"
-ditto "$APP" "$STAGE/DesignCraft.app"
+ditto "$APP" "$STAGE/FreeANDIY Layout.app"
 ln -s /Applications "$STAGE/Applications"
 # Finder window layout: background, icon size and positions (packaging/macos/dmg/README.md).
 mkdir -p "$STAGE/.background"
@@ -156,7 +156,7 @@ hdiutil_retry() {
     sleep $((attempt * 10))
   done
 }
-hdiutil_retry create create -srcfolder "$STAGE" -volname "DesignCraft" -fs HFS+ -format UDZO -imagekey zlib-level=9 -ov "$DMG"
+hdiutil_retry create create -srcfolder "$STAGE" -volname "FreeANDIY Layout" -fs HFS+ -format UDZO -imagekey zlib-level=9 -ov "$DMG"
 sign "$DMG"
 codesign --verify --strict --verbose=2 "$DMG"
 # The app inside the image must still pass --strict, so a makehybrid-style regression can't ship.
@@ -164,7 +164,7 @@ MOUNT="$WORK/dmg-check"
 rm -rf "$MOUNT"
 mkdir -p "$MOUNT"
 hdiutil_retry attach attach -nobrowse -readonly -mountpoint "$MOUNT" "$DMG" >/dev/null
-if ! codesign --verify --strict --deep --verbose=2 "$MOUNT/DesignCraft.app"; then
+if ! codesign --verify --strict --deep --verbose=2 "$MOUNT/FreeANDIY Layout.app"; then
   hdiutil_retry detach detach "$MOUNT" >/dev/null || true
   exit 1
 fi
@@ -178,17 +178,17 @@ fi
 
 # ---- CLI ---------------------------------------------------------------------------------------
 echo "==> building $CLI_ZIP"
-CLI_DIR="$WORK/designcraft-cli-$VERSION-macos-$ARCH"
+CLI_DIR="$WORK/freeandiy-layout-cli-$VERSION-macos-$ARCH"
 mkdir -p "$CLI_DIR"
-cp "$WORK/bin/designcraft-cli" "$CLI_DIR/"
+cp "$WORK/bin/freeandiy-layout-cli" "$CLI_DIR/"
 copy_docs "$CLI_DIR"
-sign --options runtime "$CLI_DIR/designcraft-cli"
-codesign --verify --strict --verbose=2 "$CLI_DIR/designcraft-cli"
+sign --options runtime "$CLI_DIR/freeandiy-layout-cli"
+codesign --verify --strict --verbose=2 "$CLI_DIR/freeandiy-layout-cli"
 rm -f "$CLI_ZIP"
 ditto -c -k --keepParent "$CLI_DIR" "$CLI_ZIP"
 # A bare Mach-O can't carry a stapled ticket; Gatekeeper looks the notarization up online.
 if [ "$NOTARIZE" = 1 ]; then notarize "$CLI_ZIP"; fi
 
-"$WORK/bin/designcraft-cli" --version
+"$WORK/bin/freeandiy-layout-cli" --version
 echo "==> done"
 ls -lh "$DMG" "$CLI_ZIP"

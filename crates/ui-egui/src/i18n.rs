@@ -7,6 +7,7 @@ mod ar;
 mod it;
 mod ja;
 mod pt_br;
+mod sk;
 mod uk;
 
 /// Supported interface languages: (code, name in that language).
@@ -21,6 +22,8 @@ pub const LANGUAGES: &[(&str, &str)] = &[
     ("pt-br", "Português (Brasil)"),
     ("it", "Italiano"),
     ("uk", "Українська"),
+    // Slovak (added by FreeANDIY): menus and common labels so far; the rest stays English.
+    ("sk", "Slovenčina"),
 ];
 
 /// English → [German, French, Spanish, Japanese, Simplified Chinese].
@@ -709,8 +712,14 @@ const TABLE: &[(&str, [&str; 5])] = &[
         ["Spreads of up to 10 pages", "Spreads of up to 10 pages", "Spreads of up to 10 pages", "Spreads of up to 10 pages", "最多10页的跨页"],
     ),
     ("for", ["for", "pour", "por", "に対して", "行"]),
-    ("About DesignCraft", ["About DesignCraft", "About DesignCraft", "About DesignCraft", "About DesignCraft", "关于 DesignCraft"]),
-    ("Quit DesignCraft", ["DesignCraft beenden", "Quitter DesignCraft", "Salir de DesignCraft", "DesignCraft を終了", "退出 DesignCraft"]),
+    (
+        "About FreeANDIY Layout",
+        ["About FreeANDIY Layout", "About FreeANDIY Layout", "About FreeANDIY Layout", "About FreeANDIY Layout", "关于 FreeANDIY Layout"],
+    ),
+    (
+        "Quit FreeANDIY Layout",
+        ["FreeANDIY Layout beenden", "Quitter FreeANDIY Layout", "Salir de FreeANDIY Layout", "FreeANDIY Layout を終了", "退出 FreeANDIY Layout"],
+    ),
     ("Accept All Changes", ["Accept All Changes", "Accept All Changes", "Accept All Changes", "Accept All Changes", "接受所有更改"]),
     ("Activate Document", ["Activate Document", "Activate Document", "Activate Document", "Activate Document", "激活文档"]),
     ("Add Anchor Point", ["Add Anchor Point", "Add Anchor Point", "Add Anchor Point", "Add Anchor Point", "添加锚点"]),
@@ -771,8 +780,8 @@ const TABLE: &[(&str, [&str; 5])] = &[
         "Apply Parent to Pages…",
         ["Apply Parent to Pages…", "Apply Parent to Pages…", "Apply Parent to Pages…", "Apply Parent to Pages…", "将主页应用于页面…"],
     ),
-    ("ArtCraft App Page…", ["ArtCraft App Page…", "ArtCraft App Page…", "ArtCraft App Page…", "ArtCraft App Page…", "ArtCraft 应用页面…"]),
-    ("ArtCraft Website…", ["ArtCraft Website…", "ArtCraft Website…", "ArtCraft Website…", "ArtCraft Website…", "ArtCraft 网站…"]),
+    ("FreeANDIY App Page…", ["FreeANDIY App Page…", "FreeANDIY App Page…", "FreeANDIY App Page…", "FreeANDIY App Page…", "FreeANDIY 应用页面…"]),
+    ("FreeANDIY website…", ["FreeANDIY website…", "FreeANDIY website…", "FreeANDIY website…", "FreeANDIY website…", "FreeANDIY 网站…"]),
     ("Attributes", ["Attributes", "Attributes", "Attributes", "Attributes", "属性"]),
     ("Bevel and Emboss", ["Bevel and Emboss", "Bevel and Emboss", "Bevel and Emboss", "Bevel and Emboss", "斜面和浮雕"]),
     ("Buttons", ["Buttons", "Buttons", "Buttons", "Buttons", "按钮"]),
@@ -907,10 +916,25 @@ const TABLE: &[(&str, [&str; 5])] = &[
     ("Delete Item", ["Delete Item", "Delete Item", "Delete Item", "Delete Item", "删除项目"]),
     ("Delete Text Variable", ["Delete Text Variable", "Delete Text Variable", "Delete Text Variable", "Delete Text Variable", "删除文本变量"]),
     ("Delete Workspace…", ["Delete Workspace…", "Delete Workspace…", "Delete Workspace…", "Delete Workspace…", "删除工作区…"]),
-    ("DesignCraft Website…", ["DesignCraft Website…", "DesignCraft Website…", "DesignCraft Website…", "DesignCraft Website…", "DesignCraft 网站…"]),
     (
-        "DesignCraft on GitHub…",
-        ["DesignCraft on GitHub…", "DesignCraft on GitHub…", "DesignCraft on GitHub…", "DesignCraft on GitHub…", "DesignCraft 在 GitHub 上…"],
+        "FreeANDIY Layout Website…",
+        [
+            "FreeANDIY Layout Website…",
+            "FreeANDIY Layout Website…",
+            "FreeANDIY Layout Website…",
+            "FreeANDIY Layout Website…",
+            "FreeANDIY Layout 网站…",
+        ],
+    ),
+    (
+        "FreeANDIY Layout on GitHub…",
+        [
+            "FreeANDIY Layout on GitHub…",
+            "FreeANDIY Layout on GitHub…",
+            "FreeANDIY Layout on GitHub…",
+            "FreeANDIY Layout on GitHub…",
+            "FreeANDIY Layout 在 GitHub 上…",
+        ],
     ),
     (
         "Detach All Objects from Parent",
@@ -1049,13 +1073,13 @@ const TABLE: &[(&str, [&str; 5])] = &[
     ("Inspect Document", ["Inspect Document", "Inspect Document", "Inspect Document", "Inspect Document", "检查文档"]),
     ("Interface Color Theme", ["Interface Color Theme", "Interface Color Theme", "Interface Color Theme", "Interface Color Theme", "界面颜色主题"]),
     (
-        "Join the ArtCraft Discord…",
+        "Join the FreeANDIY Discord…",
         [
-            "Join the ArtCraft Discord…",
-            "Join the ArtCraft Discord…",
-            "Join the ArtCraft Discord…",
-            "Join the ArtCraft Discord…",
-            "加入 ArtCraft Discord…",
+            "Join the FreeANDIY Discord…",
+            "Join the FreeANDIY Discord…",
+            "Join the FreeANDIY Discord…",
+            "Join the FreeANDIY Discord…",
+            "加入 FreeANDIY Discord…",
         ],
     ),
     ("Last Object Below", ["Last Object Below", "Last Object Below", "Last Object Below", "Last Object Below", "下方最后一个对象"]),
@@ -1541,7 +1565,7 @@ const TABLE: &[(&str, [&str; 5])] = &[
         ["Cross-Reference Format", "Cross-Reference Format", "Cross-Reference Format", "Cross-Reference Format", "交叉引用格式"],
     ),
     ("Delete Workspace", ["Delete Workspace", "Delete Workspace", "Delete Workspace", "Delete Workspace", "删除工作区"]),
-    ("DesignCraft", ["DesignCraft", "DesignCraft", "DesignCraft", "DesignCraft", "DesignCraft"]),
+    ("FreeANDIY Layout", ["FreeANDIY Layout", "FreeANDIY Layout", "FreeANDIY Layout", "FreeANDIY Layout", "FreeANDIY Layout"]),
     ("Display Performance", ["Display Performance", "Display Performance", "Display Performance", "Display Performance", "显示性能"]),
     ("Document Grid", ["Document Grid", "Document Grid", "Document Grid", "Document Grid", "文档网格"]),
     (
@@ -1585,19 +1609,19 @@ const TABLE: &[(&str, [&str; 5])] = &[
     ("Interactive", ["Interactive", "Interactive", "Interactive", "Interactive", "交互式"]),
     ("Invert", ["Invert", "Invert", "Invert", "Invert", "反相"]),
     (
-        "Join the ArtCraft community",
+        "Join the FreeANDIY community",
         [
-            "Join the ArtCraft community",
-            "Join the ArtCraft community",
-            "Join the ArtCraft community",
-            "Join the ArtCraft community",
-            "加入 ArtCraft 社区",
+            "Join the FreeANDIY community",
+            "Join the FreeANDIY community",
+            "Join the FreeANDIY community",
+            "Join the FreeANDIY community",
+            "加入 FreeANDIY 社区",
         ],
     ),
     ("Keyboard Increments", ["Keyboard Increments", "Keyboard Increments", "Keyboard Increments", "Keyboard Increments", "键盘增量"]),
     ("Liquid guides", ["Liquid guides", "Liquid guides", "Liquid guides", "Liquid guides", "自适应参考线"]),
     ("Markers", ["Markers", "Markers", "Markers", "Markers", "标记"]),
-    ("More ArtCraft apps", ["More ArtCraft apps", "More ArtCraft apps", "More ArtCraft apps", "More ArtCraft apps", "更多 ArtCraft 应用"]),
+    ("More FreeANDIY apps", ["More FreeANDIY apps", "More FreeANDIY apps", "More FreeANDIY apps", "More FreeANDIY apps", "更多 FreeANDIY 应用"]),
     ("Nested Line Styles", ["Nested Line Styles", "Nested Line Styles", "Nested Line Styles", "Nested Line Styles", "嵌套行样式"]),
     ("Nested Styles", ["Nested Styles", "Nested Styles", "Nested Styles", "Nested Styles", "嵌套样式"]),
     (
@@ -1717,13 +1741,13 @@ const TABLE: &[(&str, [&str; 5])] = &[
     ),
     ("Page · PPI", ["Page · PPI", "Page · PPI", "Page · PPI", "Page · PPI", "页面 · PPI"]),
     (
-        "Part of the ArtCraft suite of open creative tools.",
+        "Part of the FreeANDIY suite of open creative tools.",
         [
-            "Part of the ArtCraft suite of open creative tools.",
-            "Part of the ArtCraft suite of open creative tools.",
-            "Part of the ArtCraft suite of open creative tools.",
-            "Part of the ArtCraft suite of open creative tools.",
-            "ArtCraft 开源创意工具套件的一部分。",
+            "Part of the FreeANDIY suite of open creative tools.",
+            "Part of the FreeANDIY suite of open creative tools.",
+            "Part of the FreeANDIY suite of open creative tools.",
+            "Part of the FreeANDIY suite of open creative tools.",
+            "FreeANDIY 开源创意工具套件的一部分。",
         ],
     ),
     ("Pasteboard Options", ["Pasteboard Options", "Pasteboard Options", "Pasteboard Options", "Pasteboard Options", "粘贴板选项"]),
@@ -1882,8 +1906,14 @@ const TABLE: &[(&str, [&str; 5])] = &[
     ("Utilities", ["Utilities", "Utilities", "Utilities", "Utilities", "实用程序"]),
     ("Variable Font", ["Variable Font", "Variable Font", "Variable Font", "Variable Font", "可变字体"]),
     (
-        "Welcome to DesignCraft",
-        ["Welcome to DesignCraft", "Welcome to DesignCraft", "Welcome to DesignCraft", "Welcome to DesignCraft", "欢迎使用 DesignCraft"],
+        "Welcome to FreeANDIY Layout",
+        [
+            "Welcome to FreeANDIY Layout",
+            "Welcome to FreeANDIY Layout",
+            "Welcome to FreeANDIY Layout",
+            "Welcome to FreeANDIY Layout",
+            "欢迎使用 FreeANDIY Layout",
+        ],
     ),
     ("When Scaling", ["When Scaling", "When Scaling", "When Scaling", "When Scaling", "缩放时"]),
     ("[Basic] (working) ▾", ["[Basic] (working) ▾", "[Basic] (working) ▾", "[Basic] (working) ▾", "[Basic] (working) ▾", "[基本] (工作区) ▾"]),
@@ -2886,6 +2916,10 @@ pub fn tr<'a>(lang: &str, s: &'a str) -> &'a str {
     static UKRAINIAN: OnceLock<HashMap<&'static str, &'static str>> = OnceLock::new();
     static PORTUGUESE_BR: OnceLock<HashMap<&'static str, &'static str>> = OnceLock::new();
     static ITALIAN: OnceLock<HashMap<&'static str, &'static str>> = OnceLock::new();
+    static SLOVAK: OnceLock<HashMap<&'static str, &'static str>> = OnceLock::new();
+    if lang == "sk" {
+        return SLOVAK.get_or_init(|| sk::TABLE.iter().copied().collect()).get(s).copied().unwrap_or(s);
+    }
     if lang == "ar" {
         return ARABIC.get_or_init(|| ar::TABLE.iter().copied().collect()).get(s).copied().unwrap_or(s);
     }

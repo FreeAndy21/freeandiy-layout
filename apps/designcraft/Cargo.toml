@@ -5,7 +5,12 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 publish = false
-default-run = "designcraft"
+default-run = "freeandiy-layout"
+
+# FreeANDIY: the executable carries the product name; the package keeps upstream's.
+[[bin]]
+name = "freeandiy-layout"
+path = "src/main.rs"
 
 [lints]
 workspace = true
