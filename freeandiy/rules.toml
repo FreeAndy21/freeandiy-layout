@@ -175,6 +175,13 @@ replace = '${1}@@AC@@'
 min = 0
 
 [[replace]]
+name = "catalogs: unused Discord entries point at this repository's issues"
+include = ["crates/ui-egui/src/i18n{.rs,/*.rs}"]
+find = "discord.gg/artcraft"
+replace = "github.com/{{brand.github_owner}}/{{this.repo}}/issues"
+min = 1
+
+[[replace]]
 name = "catalogs: other ArtCraft mentions"
 include = ["crates/ui-egui/src/i18n{.rs,/*.rs}"]
 find = "ArtCraft"
