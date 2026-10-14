@@ -16,7 +16,7 @@ fn main() {
     res.set_icon("../../assets/app-icon/freeandiy-layout.ico")
         .set("ProductName", "FreeANDIY Layout")
         .set("FileDescription", "FreeANDIY Layout page layout")
-        .set("CompanyName", "Learning Machines LLC")
+        .set("CompanyName", "Free Andy Agency")
         .set("LegalCopyright", "Copyright (c) Free Andy Agency and the DesignCraft authors. MIT OR Apache-2.0.")
         .set("OriginalFilename", "freeandiy-layout.exe")
         .set("InternalName", "freeandiy-layout");

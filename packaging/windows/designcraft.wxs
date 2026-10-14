@@ -11,13 +11,13 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Package
       Name="FreeANDIY Layout"
-      Manufacturer="Learning Machines LLC"
+      Manufacturer="Free Andy Agency"
       Version="$(var.Version)"
       UpgradeCode="0A5E2249-5BCF-4414-BF66-D5085456AC3A"
       Scope="perMachine"
       Compressed="yes"
       Language="1033">
-    <SummaryInformation Description="FreeANDIY Layout page layout and publishing" Manufacturer="Learning Machines LLC" />
+    <SummaryInformation Description="FreeANDIY Layout page layout and publishing" Manufacturer="Free Andy Agency" />
     <!-- Same-version upgrades let successive pre-releases of one X.Y.Z replace each other
          (MSI versions are numeric, so 1.2.3-rc.1 and 1.2.3-rc.2 are both 1.2.3). -->
     <MajorUpgrade AllowSameVersionUpgrades="yes"
