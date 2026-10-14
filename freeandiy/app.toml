@@ -17,5 +17,6 @@ ci_tests = "true"
 [check]
 # check-branding.sh: extra allowed strings (regex) and Rust paths where the upstream name may stay
 # in string literals (git pathspecs, space-separated).
-allow = ""
+# The bundled hyphenation patterns credit their upstream trainer in comments no one sees.
+allow = "DesignCraft.s patgen-style trainer|DesignCraft US English hyphenation patterns"
 rs_exclude = ":!xtask/**"
