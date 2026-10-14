@@ -1931,13 +1931,13 @@ const TABLE: &[(&str, [&str; 5])] = &[
         ],
     ),
     (
-        "discord.gg/artcraft — help, feedback and show-and-tell",
+        "github.com/FreeAndy21/freeandiy-layout/issues — help, feedback and show-and-tell",
         [
-            "discord.gg/artcraft — help, feedback and show-and-tell",
-            "discord.gg/artcraft — help, feedback and show-and-tell",
-            "discord.gg/artcraft — help, feedback and show-and-tell",
-            "discord.gg/artcraft — help, feedback and show-and-tell",
-            "discord.gg/artcraft — 帮助、反馈和展示",
+            "github.com/FreeAndy21/freeandiy-layout/issues — help, feedback and show-and-tell",
+            "github.com/FreeAndy21/freeandiy-layout/issues — help, feedback and show-and-tell",
+            "github.com/FreeAndy21/freeandiy-layout/issues — help, feedback and show-and-tell",
+            "github.com/FreeAndy21/freeandiy-layout/issues — help, feedback and show-and-tell",
+            "github.com/FreeAndy21/freeandiy-layout/issues — 帮助、反馈和展示",
         ],
     ),
     (

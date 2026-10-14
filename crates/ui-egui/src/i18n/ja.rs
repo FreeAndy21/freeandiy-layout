@@ -952,7 +952,10 @@ pub(super) const TABLE: &[(&str, &str)] = &[
     ("[No Group]", "[グループなし]"),
     ("[None]", "[なし]"),
     ("[None] — choose a colour on the ramp.", "[なし] — カラーバーでカラーを選択してください。"),
-    ("discord.gg/artcraft — help, feedback and show-and-tell", "discord.gg/artcraft — サポート・ご意見・作品紹介"),
+    (
+        "github.com/FreeAndy21/freeandiy-layout/issues — help, feedback and show-and-tell",
+        "github.com/FreeAndy21/freeandiy-layout/issues — サポート・ご意見・作品紹介",
+    ),
     ("⌥-click clears overrides", "⌥ を押しながらクリックするとオーバーライドを消去します"),
     ("⚠ out of date", "⚠ 要更新"),
     ("General", "一般"),

@@ -164,7 +164,10 @@ pub(super) const TABLE: &[(&str, &str)] = &[
     ("Join our Discord", "انضم إلى Discord"),
     ("Community", "المجتمع"),
     ("Join the community", "انضم إلى المجتمع"),
-    ("discord.gg/artcraft — help, feedback and show-and-tell", "discord.gg/artcraft — مساعدة وآراء وعرض الأعمال"),
+    (
+        "github.com/FreeAndy21/freeandiy-layout/issues — help, feedback and show-and-tell",
+        "github.com/FreeAndy21/freeandiy-layout/issues — مساعدة وآراء وعرض الأعمال",
+    ),
     ("  OK  ", "  موافق  "),
     ("Float panel", "تعويم اللوحة"),
     ("Dock panel", "إرساء اللوحة"),

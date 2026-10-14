@@ -953,7 +953,10 @@ pub(super) const TABLE: &[(&str, &str)] = &[
     ("[No Group]", "[Без групи]"),
     ("[None]", "[Немає]"),
     ("[None] — choose a colour on the ramp.", "[Немає] — виберіть колір на шкалі."),
-    ("discord.gg/artcraft — help, feedback and show-and-tell", "discord.gg/artcraft — допомога, відгуки та обмін роботами"),
+    (
+        "github.com/FreeAndy21/freeandiy-layout/issues — help, feedback and show-and-tell",
+        "github.com/FreeAndy21/freeandiy-layout/issues — допомога, відгуки та обмін роботами",
+    ),
     ("⌥-click clears overrides", "⌥-клацання скидає перевизначення"),
     ("⚠ out of date", "⚠ застаріле"),
     ("General", "Загальні"),
