@@ -1,0 +1,424 @@
+diff --git a/apps/designcraft-cli/src/main.rs b/apps/designcraft-cli/src/main.rs
+index dd62cd9..dc23f07 100644
+--- a/apps/designcraft-cli/src/main.rs
++++ b/apps/designcraft-cli/src/main.rs
+@@ -13,7 +13,7 @@
+ //! designcraft-cli perf [--pages N] [--frames N] [--chars N] [--images N] [--runs N] [--strict]  # budgets on a synthetic stress document
+ //! designcraft-cli bench FILE [--runs N]  # the same measurements on one document
+ //! designcraft-cli validate-pdf FILE.pdf    # run the built-in PDF/X-4 conformance checks
+-//! designcraft-cli links                   # Discord, website, app page and GitHub links
++//! designcraft-cli links                   # website, app page and GitHub links
+ //! designcraft-cli --version               # print the version
+ //! ```
+ #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
+@@ -72,8 +72,7 @@ non-zero exit when a step fails."#;
+ /// The links line under the usage block.
+ fn usage_footer() -> String {
+     format!(
+-        "\nCommunity: {}  ·  {}  ·  {}",
+-        designcraft_engine::links::DISCORD,
++        "\nWeb: {}  ·  {}",
+         designcraft_engine::links::APP_PAGE,
+         designcraft_engine::links::GITHUB
+     )
+@@ -119,7 +118,7 @@ fn main() -> ExitCode {
+         Some("validate-pdf") => report(validate_pdf(args.get(1).map(String::as_str))),
+         Some("links") => {
+             use designcraft_engine::links::*;
+-            outln!("Discord   {DISCORD}\nWebsite   {WEBSITE}\nApp page  {APP_PAGE}\nGitHub    {GITHUB}\nIssues    {ISSUES}");
++            outln!("Website   {WEBSITE}\nApp page  {APP_PAGE}\nGitHub    {GITHUB}\nIssues    {ISSUES}");
+             ExitCode::SUCCESS
+         }
+         // Asking for help is not an error: it goes to stdout and succeeds. An unknown command
+diff --git a/apps/designcraft/src/native_menu.rs b/apps/designcraft/src/native_menu.rs
+index f51db19..e5caf46 100644
+--- a/apps/designcraft/src/native_menu.rs
++++ b/apps/designcraft/src/native_menu.rs
+@@ -39,12 +39,10 @@ impl NativeMenu {
+         let app_menu = Submenu::new("DesignCraft", true);
+         // Our own About splash (with the community links) instead of the stock panel.
+         let about = MenuItem::with_id("dc-about", "About DesignCraft", true, None);
+-        let discord = MenuItem::with_id("dc-discord", "Join the ArtCraft Discord…", true, None);
+         // Not the predefined Quit: it terminates the app at once, past the unsaved-changes prompt.
+         let quit = MenuItem::with_id("dc-quit", designcraft_ui_egui::i18n::tr(&app.ui.language, "Quit DesignCraft"), true, accel("Cmd+Q"));
+         let _ = app_menu.append_items(&[
+             &about,
+-            &discord,
+             &PredefinedMenuItem::separator(),
+             &PredefinedMenuItem::services(None),
+             &PredefinedMenuItem::separator(),
+@@ -55,7 +53,6 @@ impl NativeMenu {
+             &quit,
+         ]);
+         items.insert("dc-about".into(), ("help.about".into(), serde_json::Value::Null, Handle::Plain(about)));
+-        items.insert("dc-discord".into(), ("help.discord".into(), serde_json::Value::Null, Handle::Plain(discord)));
+         items.insert("dc-quit".into(), ("app.quit".into(), serde_json::Value::Null, Handle::Plain(quit)));
+         let _ = menu.append(&app_menu);
+         for (title, entries) in menus::menu_tree() {
+diff --git a/crates/engine/src/cmd/inspect.rs b/crates/engine/src/cmd/inspect.rs
+index f3c2733..9cc8af3 100644
+--- a/crates/engine/src/cmd/inspect.rs
++++ b/crates/engine/src/cmd/inspect.rs
+@@ -10,7 +10,7 @@ pub fn specs() -> Vec<CommandSpec> {
+     vec![
+         cmd!(query "document.inspect", "Inspect Document", [], None, "{} → pages, spreads, items, stories (with overset), styles, swatches, selection", has_doc, inspect),
+         cmd!(query "app.links", "Community & Project Links", [], None,
+-            "{} → {discord, website, appPage, github, issues} (ArtCraft Discord, website, DesignCraft page and repository)", always, |_, _| Ok(crate::links::all())),
++            "{} → {website, appPage, github, issues} (website, DesignCraft page and repository)", always, |_, _| Ok(crate::links::all())),
+         cmd!(query "document.list", "List Documents", [], None, "{}", always, |s, _| {
+             Ok(json!(s.documents().iter().enumerate().map(|(i, d)| json!({"index": i, "title": d.title(), "dirty": d.is_dirty(), "active": Some(i) == s.active_index()})).collect::<Vec<_>>()))
+         }),
+diff --git a/crates/engine/src/links.rs b/crates/engine/src/links.rs
+index ead5bd6..1a105a2 100644
+--- a/crates/engine/src/links.rs
++++ b/crates/engine/src/links.rs
+@@ -1,11 +1,9 @@
+-//! ArtCraft community and project links (Help menu, About, start screen, CLI, MCP).
++//! Project links (Help menu, About, start screen, CLI, MCP).
+ 
+ use serde_json::{Value, json};
+ 
+ /// The app's slug on getartcraft.com and GitHub.
+ pub const APP: &str = "designcraft";
+-/// The ArtCraft community Discord.
+-pub const DISCORD: &str = "https://discord.gg/artcraft";
+ /// The ArtCraft website.
+ pub const WEBSITE: &str = "https://getartcraft.com";
+ /// DesignCraft's page on the ArtCraft website.
+@@ -18,7 +16,6 @@ pub const ISSUES: &str = "https://github.com/storytold/designcraft/issues";
+ /// All links as JSON (the `app.links` command).
+ pub fn all() -> Value {
+     json!({
+-        "discord": DISCORD,
+         "website": WEBSITE,
+         "appPage": APP_PAGE,
+         "github": GITHUB,
+@@ -26,10 +23,9 @@ pub fn all() -> Value {
+     })
+ }
+ 
+-/// A link by key (`discord`, `website`, `appPage`, `github`, `issues`).
++/// A link by key (`website`, `appPage`, `github`, `issues`).
+ pub fn get(key: &str) -> Option<&'static str> {
+     Some(match key {
+-        "discord" => DISCORD,
+         "website" => WEBSITE,
+         "appPage" => APP_PAGE,
+         "github" => GITHUB,
+@@ -44,10 +40,11 @@ mod tests {
+ 
+     #[test]
+     fn links_follow_the_app_slug() {
+-        assert!(APP_PAGE.ends_with(&format!("/apps/{APP}")));
+-        assert!(GITHUB.ends_with(&format!("/storytold/{APP}")));
++        assert!(APP_PAGE.starts_with(WEBSITE));
++        assert!(GITHUB.starts_with("https://github.com/"));
+         assert!(ISSUES.starts_with(GITHUB));
+-        for k in ["discord", "website", "appPage", "github", "issues"] {
++        assert!(get("discord").is_none());
++        for k in ["website", "appPage", "github", "issues"] {
+             assert!(get(k).is_some_and(|u| u.starts_with("https://")), "{k}");
+             assert_eq!(all()[k], get(k).unwrap());
+         }
+diff --git a/crates/mcp/src/server.rs b/crates/mcp/src/server.rs
+index cd7bffd..d4baa89 100644
+--- a/crates/mcp/src/server.rs
++++ b/crates/mcp/src/server.rs
+@@ -136,9 +136,8 @@ impl Server {
+                     "capabilities": {"tools": {}, "resources": {}},
+                     "serverInfo": {"name": "designcraft", "title": "DesignCraft", "version": env!("CARGO_PKG_VERSION"), "websiteUrl": designcraft_engine::links::APP_PAGE},
+                     "instructions": format!(
+-                        "{INSTRUCTIONS} Backend: {}. Community: {} (Discord), {} (app page), {} (source). The `app.links` command returns these links.",
++                        "{INSTRUCTIONS} Backend: {}. Web: {} (app page), {} (source). The `app.links` command returns these links.",
+                         self.backend.describe(),
+-                        designcraft_engine::links::DISCORD,
+                         designcraft_engine::links::APP_PAGE,
+                         designcraft_engine::links::GITHUB
+                     ),
+diff --git a/crates/ui-egui/src/about.rs b/crates/ui-egui/src/about.rs
+index 4eae2e7..b084d3c 100644
+--- a/crates/ui-egui/src/about.rs
++++ b/crates/ui-egui/src/about.rs
+@@ -1,96 +1,33 @@
+ //! Help › About DesignCraft: tabs About · Contributors · Models. About is the splash with the
+-//! ArtCraft mark, version, and community links (Discord first and largest), plus the other ArtCraft
++//! app's mark, version, project links and the upstream attribution, plus the other FreeANDIY
+ //! apps; Contributors and Models are the compiled-in credits (`crate::credits`).
+ 
+ use designcraft_engine::links;
+-use egui::{Color32, Rect, Sense, Stroke, pos2, vec2};
++use egui::{Color32, Rect, Sense, vec2};
+ use serde_json::json;
+ 
+ use crate::DesignApp;
+ use crate::theme::{Tokens, semibold};
+ 
+-/// ArtCraft brand blue (from `docs/brand/artcraft-mark.svg`).
+-pub const BRAND: Color32 = Color32::from_rgb(0x4e, 0x7b, 0xfb);
+-/// Discord's brand colour, used for the "Join our Discord" buttons (colour only; no Discord artwork).
+-pub const DISCORD: Color32 = Color32::from_rgb(0x58, 0x65, 0xf2);
++/// The accent used where upstream used its brand blue (links, the mark's fallback).
++pub const BRAND: Color32 = Color32::from_rgb(0xBE, 0x3E, 0x6B);
+ 
+-/// The ArtCraft mark outline (viewBox -10 -19.42 136.34 136.34), from `docs/brand/artcraft-mark.svg`.
+-const MARK_PATH: &str = "M104.28,49.49L81.55,0h-31.23l-3.17,4.76L14.75,53.63,0,75.85l21.55,21.55,63.79-36.94,16.99,37.04,14.01-21.74-12.06-26.27ZM32.89,65.66l32.42-48.87,10.91,23.77-43.32,25.09Z";
+-
+-/// The other ArtCraft apps (app-page slug, name, what it is) — same list as the README.
++/// The other FreeANDIY apps (page slug on the FreeANDIY website, name, what it is).
+ pub const SIBLINGS: &[(&str, &str, &str)] = &[
+-    ("photocraft", "PhotoCraft", "image editing"),
+-    ("vectorcraft", "VectorCraft", "vector illustration"),
+-    ("filmcraft", "FilmCraft", "video editing, color and sound"),
+-    ("lightcraft", "LightCraft", "photo library and raw development"),
+-    ("pdfcraft", "PdfCraft", "reading, organizing and protecting PDFs"),
+-    ("effectcraft", "EffectCraft", "motion graphics and visual effects"),
++    ("photo", "FreeANDIY Photo", "image editing"),
++    ("vector", "FreeANDIY Vector", "vector illustration"),
++    ("film", "FreeANDIY Film", "video editing, color and sound"),
++    ("light", "FreeANDIY Light", "photo library and raw development"),
++    ("pdf", "FreeANDIY PDF", "reading, organizing and protecting PDFs"),
++    ("effects", "FreeANDIY Effects", "motion graphics and visual effects"),
+ ];
+ 
+ /// The About window's tabs, in `UiState::about_tab` order (`help.about {tab}` names them in lowercase).
+ pub const ABOUT_TABS: [&str; 3] = ["About", "Contributors", "Models"];
+ 
+-/// Paint the ArtCraft mark into `rect` (square), rasterised once per size and cached.
+-pub fn paint_mark(ui: &egui::Ui, rect: Rect, color: Color32) {
+-    use designcraft_render::vello_cpu::{self, kurbo, peniko};
+-    let ctx = ui.ctx();
+-    let ppp = ctx.pixels_per_point();
+-    let px = ((rect.width().min(rect.height()) * ppp).round() as u32).clamp(8, 1024);
+-    let key = egui::Id::new(("artcraft_mark", px, color.to_array()));
+-    let tex: Option<egui::TextureHandle> = ctx.data(|d| d.get_temp(key));
+-    let tex = tex.unwrap_or_else(|| {
+-        let mut rc = vello_cpu::RenderContext::new_with(px as u16, px as u16, vello_cpu::RenderSettings { num_threads: 0, ..Default::default() });
+-        let k = px as f64 / 136.34;
+-        rc.set_transform(kurbo::Affine::scale(k) * kurbo::Affine::translate((10.0, 19.42)));
+-        let [r, g, b, a] = color.to_srgba_unmultiplied();
+-        rc.set_paint(peniko::Color::from_rgba8(r, g, b, a));
+-        if let Ok(p) = kurbo::BezPath::from_svg(MARK_PATH) {
+-            rc.fill_path(&p);
+-        }
+-        rc.flush();
+-        let mut pm = vello_cpu::Pixmap::new(px as u16, px as u16);
+-        let mut res = vello_cpu::Resources::new();
+-        rc.render(&mut pm, &mut res);
+-        let ci = egui::ColorImage::from_rgba_premultiplied([px as usize, px as usize], pm.data_as_u8_slice());
+-        let t = ctx.load_texture("artcraft_mark", ci, egui::TextureOptions::LINEAR);
+-        ctx.data_mut(|d| d.insert_temp(key, t.clone()));
+-        t
+-    });
+-    let side = rect.width().min(rect.height());
+-    let r = Rect::from_center_size(rect.center(), vec2(side, side));
+-    ui.painter().image(tex.id(), r, Rect::from_min_max(pos2(0.0, 0.0), pos2(1.0, 1.0)), Color32::WHITE);
+-}
+-
+-/// A speech-bubble glyph (drawn in code) for Discord buttons.
+-pub fn paint_chat_icon(p: &egui::Painter, c: egui::Pos2, s: f32, color: Color32) {
+-    let body = Rect::from_center_size(c - vec2(0.0, s * 0.06), vec2(s, s * 0.72));
+-    p.rect_filled(body, s * 0.24, color);
+-    let tail = vec![
+-        pos2(body.left() + s * 0.22, body.bottom() - 1.0),
+-        pos2(body.left() + s * 0.12, body.bottom() + s * 0.24),
+-        pos2(body.left() + s * 0.44, body.bottom() - 1.0),
+-    ];
+-    p.add(egui::Shape::convex_polygon(tail, color, Stroke::NONE));
+-    let eye = s * 0.09;
+-    let bg = if color.r() as u32 + color.g() as u32 + color.b() as u32 > 380 { DISCORD } else { Color32::WHITE };
+-    p.circle_filled(body.center() - vec2(s * 0.18, 0.0), eye, bg);
+-    p.circle_filled(body.center() + vec2(s * 0.18, 0.0), eye, bg);
+-}
+-
+-/// The big "Join our Discord" button. Returns true when clicked.
+-pub fn discord_button(ui: &mut egui::Ui, label: &str, size: egui::Vec2) -> bool {
+-    let (r, resp) = ui.allocate_exact_size(size, Sense::click());
+-    let resp = resp.on_hover_text(links::DISCORD).on_hover_cursor(egui::CursorIcon::PointingHand);
+-    let fill = if resp.hovered() { Color32::from_rgb(0x47, 0x52, 0xc4) } else { DISCORD };
+-    ui.painter().rect_filled(r, size.y / 2.0, fill);
+-    let icon = size.y * 0.5;
+-    let font = semibold((size.y * 0.42).max(11.0));
+-    let galley = crate::rtl::plain(ui.ctx(), label, font, Color32::WHITE);
+-    let total = icon + 8.0 + galley.size().x;
+-    let x0 = r.center().x - total / 2.0;
+-    paint_chat_icon(ui.painter(), pos2(x0 + icon / 2.0, r.center().y), icon, Color32::WHITE);
+-    ui.painter().galley(pos2(x0 + icon + 8.0, r.center().y - galley.size().y / 2.0), galley, Color32::WHITE);
+-    resp.clicked()
++/// Paint the app's mark (FreeANDIY's monogram tile) into `rect` (square).
++pub fn paint_mark(ui: &egui::Ui, rect: Rect, _color: Color32) {
++    crate::freeandiy::paint_mark(ui, rect);
+ }
+ 
+ /// A text link that opens `url`. Returns true when clicked.
+@@ -163,18 +100,9 @@ pub fn show(app: &mut DesignApp, ctx: &egui::Context) {
+                     .size(12.0)
+                     .color(t.text_dim),
+             ));
+-            ui.add_space(16.0);
+-            if discord_button(ui, "Join the ArtCraft Discord", vec2(300.0, 40.0)) {
+-                open = Some("discord");
+-            }
+-            ui.add_space(4.0);
+-            ui.label(crate::rtl::widget(
+-                ui,
+-                egui::RichText::new(crate::i18n::tr(&app.ui.language, "discord.gg/artcraft — help, feedback and show-and-tell"))
+-                    .size(11.0)
+-                    .color(t.text_dim),
+-            ));
+-            ui.add_space(14.0);
++            ui.add_space(10.0);
++            crate::freeandiy::about_attribution(ui, &app.ui.language);
++            ui.add_space(10.0);
+             ui.horizontal(|ui| {
+                 // Centre the row of links.
+                 let w = 330.0;
+@@ -205,7 +133,7 @@ pub fn show(app: &mut DesignApp, ctx: &egui::Context) {
+                     - ui.spacing().item_spacing.x;
+                 ui.add_space(((ui.available_width() - w) / 2.0).max(0.0));
+                 for (slug, name, what) in SIBLINGS {
+-                    let url = format!("{}/apps/{slug}", links::WEBSITE);
++                    let url = format!("{}/{slug}", links::WEBSITE);
+                     let b =
+                         ui.add(egui::Button::new(egui::RichText::new(*name).size(12.0)).corner_radius(10.0)).on_hover_text(format!("{what} — {url}"));
+                     if b.clicked() {
+diff --git a/crates/ui-egui/src/chrome.rs b/crates/ui-egui/src/chrome.rs
+index c2f1cb4..6a15231 100644
+--- a/crates/ui-egui/src/chrome.rs
++++ b/crates/ui-egui/src/chrome.rs
+@@ -123,11 +123,6 @@ pub fn app_bar(app: &mut DesignApp, ui: &mut egui::Ui) {
+                         if icons::button(ui, "share", 22.0, false, crate::i18n::tr(&app.ui.language, "Share")).clicked() {
+                             app.status("Export a PDF, IDML or package to share — no cloud account needed.");
+                         }
+-                        ui.add_space(8.0);
+-                        // Always one click away: the ArtCraft community Discord.
+-                        if crate::about::discord_button(ui, "Discord", vec2(78.0, 22.0)) {
+-                            let _ = app.run("help.discord", json!({}));
+-                        }
+                         tools_start = ui.min_rect().min.x;
+                         ui.min_rect().width()
+                     });
+@@ -744,7 +739,7 @@ pub fn start_screen(app: &mut DesignApp, ui: &mut egui::Ui) {
+     let _ = Content::Unassigned;
+ }
+ 
+-/// Start screen: the ArtCraft community (Discord first) and project links.
++/// Start screen: the app's mark and project links.
+ fn community_card(app: &mut DesignApp, ui: &mut egui::Ui) {
+     let t = Tokens::get(ui.ctx());
+     egui::Frame::NONE.fill(t.panel).corner_radius(10.0).inner_margin(egui::Margin::same(14)).show(ui, |ui| {
+@@ -756,13 +751,11 @@ fn community_card(app: &mut DesignApp, ui: &mut egui::Ui) {
+             ui.vertical(|ui| {
+                 ui.label(crate::rtl::widget(
+                     ui,
+-                    egui::RichText::new(crate::i18n::tr(&app.ui.language, "Join the ArtCraft community")).font(semibold(14.0)).color(t.text_strong),
++                    egui::RichText::new(crate::freeandiy::t(&app.ui.language, crate::freeandiy::HOME_TITLE)).font(semibold(14.0)).color(t.text_strong),
+                 ));
+                 ui.label(crate::rtl::widget(
+                     ui,
+-                    egui::RichText::new(crate::i18n::tr(&app.ui.language, "Get help, share your layouts and shape what we build next."))
+-                        .size(12.0)
+-                        .color(t.text_dim),
++                    egui::RichText::new(crate::freeandiy::t(&app.ui.language, crate::freeandiy::HOME_TEXT)).size(12.0).color(t.text_dim),
+                 ));
+                 ui.add_space(4.0);
+                 ui.horizontal(|ui| {
+@@ -779,11 +772,6 @@ fn community_card(app: &mut DesignApp, ui: &mut egui::Ui) {
+                     }
+                 });
+             });
+-            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+-                if crate::about::discord_button(ui, crate::i18n::tr(&app.ui.language, "Join our Discord"), vec2(190.0, 38.0)) {
+-                    let _ = app.run("help.discord", json!({}));
+-                }
+-            });
+         });
+     });
+ }
+diff --git a/crates/ui-egui/src/lib.rs b/crates/ui-egui/src/lib.rs
+index 1db2f59..c44a0f6 100644
+--- a/crates/ui-egui/src/lib.rs
++++ b/crates/ui-egui/src/lib.rs
+@@ -13,6 +13,7 @@ pub mod control;
+ pub mod credits;
+ pub mod dialogs;
+ pub mod dock;
++pub mod freeandiy;
+ pub mod i18n;
+ pub mod icons;
+ pub mod menus;
+diff --git a/crates/ui-egui/src/menus.rs b/crates/ui-egui/src/menus.rs
+index dc8b88b..d45d21a 100644
+--- a/crates/ui-egui/src/menus.rs
++++ b/crates/ui-egui/src/menus.rs
+@@ -179,7 +179,6 @@ pub const UI_COMMANDS: &[(&str, &str, Option<&str>, &str)] = &[
+         "{on?: bool, at?: [x, y] (points from the canvas's top-left)} — the Contextual Task Bar stays where it is (or at `at`) instead of following the selection; with neither, toggles",
+     ),
+     ("window.taskBarReset", "Reset Bar Position", None, "{} — the Contextual Task Bar follows the selection again, under it"),
+-    ("help.discord", "Join the ArtCraft Discord…", None, "{} — opens https://discord.gg/artcraft in the browser"),
+     ("help.appPage", "DesignCraft Website…", None, "{} — opens https://getartcraft.com/apps/designcraft"),
+     ("help.github", "DesignCraft on GitHub…", None, "{} — opens https://github.com/storytold/designcraft"),
+     ("help.issues", "Report an Issue…", None, "{} — opens the GitHub issue tracker"),
+@@ -738,8 +737,6 @@ pub const MENUS: &[(&str, &[&str])] = &[
+     (
+         "Help",
+         &[
+-            "ui:help.discord",
+-            "-",
+             "ui:help.appPage",
+             "ui:help.github",
+             "ui:help.issues",
+diff --git a/crates/ui-egui/src/theme.rs b/crates/ui-egui/src/theme.rs
+index 193abf3..8ee3ba1 100644
+--- a/crates/ui-egui/src/theme.rs
++++ b/crates/ui-egui/src/theme.rs
+@@ -126,7 +126,7 @@ impl Tokens {
+             measure_bg: Color32::from_rgba_unmultiplied(70, 70, 70, 230),
+             measure_text: Color32::WHITE,
+         };
+-        match b {
++        let tokens = match b {
+             Brightness::Dark => dark,
+             // Measured from InDesign 2026 (plan/indesign/11-observed-ui.md §1).
+             Brightness::MediumDark => Tokens {
+@@ -249,7 +249,8 @@ impl Tokens {
+                 tab_strip: hex(0x000000),
+                 ..dark
+             },
+-        }
++        };
++        crate::freeandiy::tokens(b, tokens)
+     }
+ }
+ 
+@@ -268,12 +269,17 @@ fn font_definitions(craft: &'static [designcraft_fonts::CraftFont], lang: &str)
+     let add = |fonts: &mut FontDefinitions, name: &str, data: &'static [u8]| {
+         fonts.font_data.insert(name.into(), Arc::new(FontData::from_static(data)));
+     };
+-    add(&mut fonts, "ui", include_bytes!("../../../assets/fonts/SourceSans3-Regular.ttf"));
+-    add(&mut fonts, "ui-semibold", include_bytes!("../../../assets/fonts/SourceSans3-Semibold.ttf"));
+-    add(&mut fonts, "mono", include_bytes!("../../../assets/fonts/JetBrainsMono-Regular.ttf"));
+-    fonts.families.entry(FontFamily::Proportional).or_default().insert(0, "ui".into());
+-    fonts.families.entry(FontFamily::Monospace).or_default().insert(0, "mono".into());
+-    fonts.families.insert(FontFamily::Name("semibold".into()), vec!["ui-semibold".into(), "ui".into()]);
++    // FreeANDIY: IBM Plex Sans and Mono (`crate::freeandiy::fonts`) under upstream's keys, with
++    // upstream's faces right after for the symbols Plex lacks.
++    add(&mut fonts, "ui", crate::freeandiy::fonts::sans_regular());
++    add(&mut fonts, "ui-semibold", crate::freeandiy::fonts::sans_semibold());
++    add(&mut fonts, "mono", crate::freeandiy::fonts::mono_regular());
++    add(&mut fonts, "ui-upstream", include_bytes!("../../../assets/fonts/SourceSans3-Regular.ttf"));
++    add(&mut fonts, "ui-semibold-upstream", include_bytes!("../../../assets/fonts/SourceSans3-Semibold.ttf"));
++    add(&mut fonts, "mono-upstream", include_bytes!("../../../assets/fonts/JetBrainsMono-Regular.ttf"));
++    fonts.families.entry(FontFamily::Proportional).or_default().splice(0..0, ["ui".into(), "ui-upstream".into()]);
++    fonts.families.entry(FontFamily::Monospace).or_default().splice(0..0, ["mono".into(), "mono-upstream".into()]);
++    fonts.families.insert(FontFamily::Name("semibold".into()), vec!["ui-semibold".into(), "ui-semibold-upstream".into(), "ui".into(), "ui-upstream".into()]);
+     let pick = |script: &str| -> Vec<&designcraft_fonts::CraftFont> { craft.iter().filter(|f| f.scripts.contains(&script)).collect() };
+     let mut japanese = pick("Jpan");
+     // BIZ UDPGothic (the UI face) first, Regular before Bold; the semibold family prefers Bold.
+@@ -345,6 +351,7 @@ pub fn apply(ctx: &egui::Context, t: &Tokens) {
+     v.widgets.inactive.weak_bg_fill = Color32::TRANSPARENT;
+     v.widgets.inactive.bg_fill = t.input;
+     v.popup_shadow = egui::epaint::Shadow { offset: [0, 4], blur: 12, spread: 0, color: Color32::from_black_alpha(90) };
++    crate::freeandiy::visuals(&mut v);
+     ctx.set_visuals(v);
+     ctx.global_style_mut(|s| {
+         s.text_styles = text_styles.clone();
