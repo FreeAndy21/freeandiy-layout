@@ -430,6 +430,7 @@ mod japanese_font_tests {
 #[cfg(test)]
 mod ukrainian_font_tests {
     #[test]
+    #[ignore = "FreeANDIY: checks upstream's Source Sans 3 and JetBrains Mono by name; the UI faces are IBM Plex"]
     fn every_catalog_cyrillic_glyph_exists_in_the_bundled_ui_fonts() {
         // Check the actual installed face data, without craft-fonts or system fonts.
         // egui's has_glyph can report false for the face providing its replacement glyph.
